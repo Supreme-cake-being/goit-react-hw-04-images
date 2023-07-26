@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect, Component } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
@@ -6,39 +6,32 @@ import { Overlay, ModalContainer } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export default class Modal extends Component {
-  state = {};
+const Modal = ({ onClose, image }) => {
+  useEffect(() => {
+    window.addEventListener('keydown', closeModal);
 
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-    image: PropTypes.string.isRequired,
+    return () => {
+      window.removeEventListener('keydown', closeModal);
+    };
+  });
+
+  const closeModal = e => {
+    if (e.code === 'Escape' || e.currentTarget === e.target) onClose();
   };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.closeModal);
-  }
+  return createPortal(
+    <Overlay onClick={closeModal}>
+      <ModalContainer>
+        <img src={image} alt="piska" />
+      </ModalContainer>
+    </Overlay>,
+    modalRoot
+  );
+};
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.closeModal);
-  }
+export default Modal;
 
-  closeModal = e => {
-    if (e.code === 'Escape' || e.currentTarget === e.target)
-      this.props.onClose();
-  };
-
-  render() {
-    const { image } = this.props;
-
-    return createPortal(
-      <Overlay onClick={this.closeModal}>
-        <ModalContainer>
-          <img src={image} alt="piska" />
-        </ModalContainer>
-      </Overlay>,
-      modalRoot
-    );
-  }
-}
-
-// export default Modal;
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  image: PropTypes.string.isRequired,
+};
