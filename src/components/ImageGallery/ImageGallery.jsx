@@ -1,5 +1,4 @@
-// import { useState, useEffect } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import { ImageGalleryList, Error } from './ImageGallery.styled';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
@@ -41,4 +40,17 @@ const ImageGallery = ({
 
 export default ImageGallery;
 
-// ImageGallery.propTypes = { searchQuery: PropTypes.string.isRequired };
+ImageGallery.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  totalImages: PropTypes.number.isRequired,
+  loadingStatus: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
