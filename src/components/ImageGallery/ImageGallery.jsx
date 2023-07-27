@@ -1,78 +1,89 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+// import { useState, useEffect } from 'react';
+// import PropTypes from 'prop-types';
 
 import { ImageGalleryList, Error } from './ImageGallery.styled';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Button from '../Button/Button';
-import fetchFromApi from '../../services/pixabay-api';
 import Loader from 'components/Loader/Loader';
 
-const ImageGallery = ({ searchQuery }) => {
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
-  const [results, setResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [firstLoad, setFirstLoad] = useState(true);
+const ImageGallery = ({
+  images = [],
+  totalImages = 0,
+  loadingStatus = false,
+  errorMessage = '',
+  onClick,
+}) => {
+  // const [page, setPage] = useState(1);
+  // const [totalResults, setTotalResults] = useState(0);
+  // const [results, setResults] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState('');
+  // const [firstLoad, setFirstLoad] = useState(true);
 
-  useEffect(() => {
-    if (!firstLoad) {
-      loadImages();
-    }
-    setFirstLoad(false);
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   setPage(1);
+  //   setTotalResults(0);
+  //   setResults([]);
+  // }, [searchQuery]);
 
-  useEffect(() => {
-    if (!firstLoad) {
-      loadMoreImages();
-    }
-  }, [page]);
+  // useEffect(() => {
+  //   const loadImages = async () => {
+  //     setPage(1);
+  //     setResults([]);
+  //     setIsLoading(true);
+  //     setError('');
 
-  const handleLoadMoreClick = () => {
-    setPage(page + 1);
-  };
+  //     try {
+  //       const response = await fetchFromApi(searchQuery, page);
+  //       const { data } = response;
+  //       setTotalResults(data.totalHits);
+  //       setResults([...data.hits]);
+  //       setIsLoading(false);
 
-  const loadImages = async () => {
-    setPage(1);
-    setResults([]);
-    setIsLoading(true);
-    setError('');
+  //       if (data.totalHits === 0) {
+  //         setError('No results');
+  //       }
+  //     } catch (error) {
+  //       setIsLoading(false);
+  //       setError('Something went wrong. Try reloading the page');
+  //     }
+  //   };
 
-    try {
-      const response = await fetchFromApi(searchQuery, page);
-      const { data } = response;
-      setTotalResults(data.totalHits);
-      setResults([...data.hits]);
-      setIsLoading(false);
+  //   if (searchQuery !== '' && page === 1) {
+  //     loadImages();
+  //   }
+  //   setFirstLoad(false);
+  // }, [page, searchQuery]);
 
-      if (data.totalHits === 0) {
-        setError('No results');
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setError('Something went wrong. Try reloading the page');
-    }
-  };
+  // useEffect(() => {
+  //   const loadMoreImages = async () => {
+  //     setIsLoading(true);
 
-  const loadMoreImages = async () => {
-    setIsLoading(true);
+  //     try {
+  //       const response = await fetchFromApi(searchQuery, page);
+  //       const { data } = response;
+  //       setResults(prevResults => [...prevResults, ...data.hits]);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       setIsLoading(false);
+  //       setError('Something went wrong. Try reloading the page');
+  //     }
+  //   };
 
-    try {
-      const response = await fetchFromApi(searchQuery, page);
-      const { data } = response;
-      setResults([...results, ...data.hits]);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      setError('Something went wrong. Try reloading the page');
-    }
-  };
+  //   if (searchQuery !== '' && page !== 1) {
+  //     loadMoreImages();
+  //   }
+  // }, [page, searchQuery]);
+
+  // const handleLoadMoreClick = () => {
+  //   setPage(prevPage => prevPage + 1);
+  // };
 
   return (
     <>
-      {totalResults !== 0 ? (
+      {totalImages !== 0 ? (
         <ImageGalleryList>
-          {results.map(({ id, webformatURL, largeImageURL, tags }) => (
+          {images.map(({ id, webformatURL, largeImageURL, tags }) => (
             <ImageGalleryItem
               key={id}
               image={webformatURL}
@@ -82,20 +93,18 @@ const ImageGallery = ({ searchQuery }) => {
           ))}
         </ImageGalleryList>
       ) : (
-        error && <Error>{error}</Error>
+        errorMessage && <Error>{errorMessage}</Error>
       )}
 
-      {isLoading && <Loader />}
+      {loadingStatus && <Loader />}
 
-      {isLoading ||
-        results.length === 0 ||
-        (totalResults > results.length && (
-          <Button onClick={handleLoadMoreClick} />
-        ))}
+      {loadingStatus ||
+        images.length === 0 ||
+        (totalImages > images.length && <Button onClick={onClick} />)}
     </>
   );
 };
 
 export default ImageGallery;
 
-ImageGallery.propTypes = { searchQuery: PropTypes.string.isRequired };
+// ImageGallery.propTypes = { searchQuery: PropTypes.string.isRequired };
